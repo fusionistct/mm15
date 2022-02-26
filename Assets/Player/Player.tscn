@@ -1,0 +1,146 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://Assets/Player/Player.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Player/Red_Hood.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Player/States/Run.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Player/States/Idle.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Player/States/Air.gd" type="Script" id=5]
+[ext_resource path="res://StateMachine/StateMachine.gd" type="Script" id=6]
+[ext_resource path="res://Assets/Player/States/Move.gd" type="Script" id=7]
+[ext_resource path="res://Assets/slash_try_2-Sheet.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Player/Red_Hood_side_runningsheet.png" type="Texture" id=9]
+[ext_resource path="res://Assets/PlayerAttack.tres" type="Animation" id=10]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 3, 6.5 )
+
+[sub_resource type="Animation" id=5]
+resource_name = "Idle"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Idle:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Attack:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Run:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Run:frame_coords")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Idle:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "Run"
+length = 0.5
+loop = true
+step = 0.0833333
+tracks/0/type = "value"
+tracks/0/path = NodePath("Run:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.0833333, 0.166667, 0.25, 0.333333, 0.416667 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5 ]
+}
+
+[node name="Player" type="KinematicBody2D"]
+script = ExtResource( 1 )
+
+[node name="Idle" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+
+[node name="Run" type="Sprite" parent="."]
+visible = false
+position = Vector2( -2, 0 )
+texture = ExtResource( 9 )
+hframes = 6
+
+[node name="Attack" type="Sprite" parent="."]
+visible = false
+position = Vector2( 10, 0 )
+texture = ExtResource( 8 )
+hframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 1.5 )
+shape = SubResource( 1 )
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource( 6 )
+initial_state = NodePath("Move/Idle")
+
+[node name="Move" type="Node" parent="StateMachine"]
+script = ExtResource( 7 )
+
+[node name="Idle" type="Node" parent="StateMachine/Move"]
+script = ExtResource( 4 )
+
+[node name="Air" type="Node" parent="StateMachine/Move"]
+script = ExtResource( 5 )
+
+[node name="Run" type="Node" parent="StateMachine/Move"]
+script = ExtResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Idle = SubResource( 5 )
+anims/RESET = SubResource( 3 )
+anims/Run = SubResource( 4 )
+
+[node name="AttackAnimPlayer" type="AnimationPlayer" parent="."]
+anims/Attack = ExtResource( 10 )
