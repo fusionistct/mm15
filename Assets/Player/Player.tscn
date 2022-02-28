@@ -7,9 +7,9 @@
 [ext_resource path="res://Assets/Player/States/Air.gd" type="Script" id=5]
 [ext_resource path="res://StateMachine/StateMachine.gd" type="Script" id=6]
 [ext_resource path="res://Assets/Player/States/Move.gd" type="Script" id=7]
-[ext_resource path="res://Assets/slash_try_2-Sheet.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Player/slash_try_2-Sheet.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Player/Red_Hood_side_runningsheet.png" type="Texture" id=9]
-[ext_resource path="res://Assets/PlayerAttack.tres" type="Animation" id=10]
+[ext_resource path="res://Assets/Player/PlayerAttack.tres" type="Animation" id=10]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 3, 6.5 )
