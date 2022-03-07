@@ -30,6 +30,10 @@ config/name="Metroidvania Month 15"
 run/main_scene="res://Levels/TestLevel.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+PlayerStats="*res://Assets/Player/PlayerStats.tscn"
+
 [input]
 
 attack={
