@@ -16,6 +16,8 @@ func physics_process(delta: float) -> void:
 
 func enter(msg: Dictionary = {}) -> void:
 #	owner.get_node("AnimatedSprite").animation = "run"
+	if owner.currentSprite.name != "Run" and not move.dash and not owner.dead:
+		owner._changeSprite(owner.currentSprite, owner.runSprite)
 	move.enter(msg)
 
 func exit() -> void:

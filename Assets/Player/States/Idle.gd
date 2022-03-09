@@ -16,6 +16,8 @@ func physics_process(delta: float) -> void:
 
 func enter(msg: Dictionary = {}) -> void:
 	move.enter(msg)
+	if not owner.dead:
+		owner._changeSprite(owner.currentSprite, owner.idleSprite)
 	move.max_speed = move.max_speed_default
 	move.velocity = Vector2.ZERO
 

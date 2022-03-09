@@ -18,6 +18,7 @@ var move_direction : Vector2
 
 var knockback = false
 var dead = false
+var dash = false
 
 onready var attackSpritePos = owner.get_node("Attack").get_position()
 onready var hitboxPos = owner.get_node("Hitbox/CollisionShape2D").get_position()
@@ -27,17 +28,20 @@ func unhandled_input(event: InputEvent) -> void:
 	if owner.is_on_floor() and not dead:
 		if event.is_action_pressed("ui_accept"):
 			_state_machine.transition_to("Move/Air", { impulse = jump_impulse })
+	if Input.is_action_just_pressed("dash") and not dead:
+		_state_machine.transition_to("Move/Dash")
 
 func physics_process(delta: float) -> void:	
 	var cancel_momentum = Input.is_action_just_released("ui_left") or Input.is_action_just_released("ui_right")
-	var move_direction = Vector2.ZERO if knockback else get_move_direction()
+	move_direction = Vector2.ZERO if knockback else get_move_direction()
 	
 	if knockback:
 		move_direction = Vector2.ZERO
 	else:
-		if dead:
+		if dead or dash:
 			move_direction = Vector2(0, 1)
-		velocity = calculate_velocity(velocity, max_speed,
+		if !dash:
+			velocity = calculate_velocity(velocity, max_speed,
 		acceleration, delta, move_direction, cancel_momentum)
 
 	velocity = owner.move_and_slide(velocity, owner.FLOOR_NORMAL)
@@ -45,22 +49,32 @@ func physics_process(delta: float) -> void:
 	if(move_direction.x<=-1):
 		owner.get_node("Idle").set_flip_h( true )
 		owner.get_node("Run").set_flip_h( true )
+		owner.get_node("Dash").set_flip_h (true)
+		owner.get_node("Jump").set_flip_h (true)
+		owner.get_node("Fall").set_flip_h (true)
 		owner.get_node("Run").set_position(Vector2(2, 0))
+		owner.get_node("Jump").set_position(Vector2(2, 1))
+		owner.get_node("Fall").set_position(Vector2(2, 0))
 		owner.get_node("EnemyDetector").set_position(Vector2(-hurtboxPos.x, hurtboxPos.y))
 		if not owner.attackActive:
 			owner.get_node("Attack").set_flip_h( true )
 			owner.get_node("Attack").set_position(Vector2(-attackSpritePos.x, 0))
 			owner.get_node("Hitbox/CollisionShape2D").set_position(Vector2(-hitboxPos.x, hitboxPos.y))
-		owner.facingDirection = "left"
+		owner.facingDirection = -1
 	elif(move_direction.x>=1):
 		owner.get_node("Idle").set_flip_h( false )
 		owner.get_node("Run").set_flip_h( false )
+		owner.get_node("Dash").set_flip_h( false )
+		owner.get_node("Jump").set_flip_h( false )
+		owner.get_node("Fall").set_flip_h( false )
 		owner.get_node("Run").set_position(Vector2(-2, 0))
+		owner.get_node("Jump").set_position(Vector2(-2, 1))
+		owner.get_node("Fall").set_position(Vector2(-2, 0))
 		if not owner.attackActive:
 			owner.get_node("Attack").set_flip_h( false )
 			owner.get_node("Attack").set_position(Vector2(attackSpritePos.x, 0))
 			owner.get_node("Hitbox/CollisionShape2D").set_position(Vector2(hitboxPos.x, hitboxPos.y))
-		owner.facingDirection = "right"
+		owner.facingDirection = 1
 		
 static func calculate_velocity(
 		old_velocity: Vector2,
@@ -91,6 +105,8 @@ func _on_EnemyDetector_body_entered(body):
 	if body.is_in_group("Enemies"):
 		owner.stats.health -= 1
 		#print_debug("Health: ", owner.stats.health)
+		print_debug(owner.global_position.x)
+		print_debug(body.global_position.x)
 		_state_machine.transition_to("Move/Damage", {other_body = body})
 		owner.get_node("Hurt").modulate = Color(10,10,10,.8)
 		yield(get_tree().create_timer(.05), "timeout")

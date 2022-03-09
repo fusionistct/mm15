@@ -12,6 +12,11 @@ func unhandled_input(event: InputEvent) -> void:
 func physics_process(delta: float) -> void:
 	move.physics_process(delta)
 	
+	if move.velocity.y < 0 and owner.currentSprite.name != "Jump" and not move.dash and not owner.dead:
+		owner._changeSprite(owner.currentSprite, owner.jumpSprite)
+	if move.velocity.y >= 0 and owner.currentSprite.name !="Fall" and not move.dash and not owner.dead:
+		owner._changeSprite(owner.currentSprite, owner.fallSprite)
+	
 	owner.jumpFrame +=1
 	
 	if owner.jumpFrame < 10:
