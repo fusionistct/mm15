@@ -26,9 +26,9 @@ onready var hurtboxPos = owner.get_node("EnemyDetector").get_position()
 
 func unhandled_input(event: InputEvent) -> void:	
 	if owner.is_on_floor() and not dead:
-		if event.is_action_pressed("ui_accept"):
+		if event.is_action_pressed("jump"):
 			_state_machine.transition_to("Move/Air", { impulse = jump_impulse })
-	if Input.is_action_just_pressed("dash") and not dead:
+	if Input.is_action_just_pressed("dash") and not dead and owner.canDash and not owner.dashCooldown:
 		_state_machine.transition_to("Move/Dash")
 
 func physics_process(delta: float) -> void:	

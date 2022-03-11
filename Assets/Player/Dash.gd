@@ -24,6 +24,7 @@ func enter(msg: Dictionary = {}) -> void:
 	yield(get_tree().create_timer(DASH_TIME), "timeout")
 	move.dash = false
 	owner.dash = false
+	owner.startDashCooldown()
 	owner._changeSprite(owner.dashSprite, owner.idleSprite)
 	#owner.dashing = false
 	_state_machine.transition_to("Move/Idle")

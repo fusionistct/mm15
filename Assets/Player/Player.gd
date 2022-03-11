@@ -27,8 +27,14 @@ onready var collider = $EnemyDetector/CollisionShape2D
 onready var facingDirection = 1
 onready var lastAttackDirection = 1
 
+onready var canDash = false
+onready var canDoubleJump = false
+
 onready var dead = false
 onready var dash = false
+onready var dashCooldown = false
+onready var dashCooldownTimer
+const DASH_COOLDOWN_TIME = .2
 
 onready var invincible = false
 var invincibilityTimer
@@ -41,9 +47,31 @@ func _ready():
 	stats.connect("no_health", self, "_death")
 	attackAnimPlayer.connect("animation_finished", self, "_finishAttack")
 	invincibilityTimer = Timer.new()
+	dashCooldownTimer = Timer.new()
 	add_child(invincibilityTimer)
+	add_child(dashCooldownTimer)
 	invincibilityTimer.connect("timeout", self, "_finishInvincibility")
+	dashCooldownTimer.connect("timeout", self, "finishDashCooldown")	
 
+func startDashCooldown():
+	dashCooldown = true
+	dashCooldownTimer.set_wait_time(DASH_COOLDOWN_TIME)
+	dashCooldownTimer.start()
+	
+func finishDashCooldown():
+	print_debug("entered")
+	dashCooldownTimer.stop()		
+	$Tween.interpolate_property(self, "modulate", 
+		Color(1, 1, 1, 1), Color( 5, 5, 5, .8 ), .3, 
+		Tween.TRANS_LINEAR, Tween.EASE_IN)
+	$Tween.start()
+	yield(get_tree().create_timer(.3), "timeout")
+	$Tween2.interpolate_property(self, "modulate", 
+		Color( 5, 5, 5, .8 ), Color(1, 1, 1, 1), .3,
+		Tween.TRANS_LINEAR, Tween.EASE_IN)
+	$Tween2.start()
+	yield(get_tree().create_timer(.3), "timeout")
+	dashCooldown = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -89,7 +117,8 @@ func _playAnim(sprite: Sprite) -> void:
 func _changeSprite(from: Sprite, to: Sprite) -> void:
 	animationPlayer.seek(0, true)
 	from.hide()
-	to.show()
+	if not (dead and to != deathSprite):
+		to.show()
 	animationPlayer.play(to.name)
 	currentSprite = to
 
