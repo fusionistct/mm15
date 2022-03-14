@@ -17,5 +17,5 @@ func _ready():
 
 
 func _on_Projectile_body_entered(body):
-	if body is TileMap or body.name == "Player" :
+	if body is TileMap or body.name == "Player":
 		queue_free()

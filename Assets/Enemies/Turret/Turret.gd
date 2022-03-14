@@ -12,6 +12,8 @@ func _ready():
 	spitTimer = Timer.new()
 	add_child(spitTimer)
 	spitTimer.connect("timeout", self, "spit")
+	if self.get_scale().x == -1:
+		projectile_speed = projectile_speed * -1
 
 func spit():
 	var projectile_instance =  projectile.instance()

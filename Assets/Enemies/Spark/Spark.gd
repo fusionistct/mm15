@@ -55,10 +55,6 @@ func _ready():
 	spitTimer.connect("timeout", self, "spit")
 
 func _physics_process(delta):
-	#if Input.is_action_just_pressed("attack"):
-	#	spit()
-	#print_debug(direction)
-	#print_debug($Sprite.get_scale())
 	if direction.x > 0 and $Sprite.get_scale().x > 0:
 		$Sprite.set_scale(Vector2(-1, 1))
 		$Position2D.set_position(Vector2(-3, 2))
@@ -103,6 +99,7 @@ func seek_player():
 
 func _on_Hurtbox_area_entered(area):
 	if area.is_in_group("Attack"):
+		#owner.playHitSound()
 		animPlayer.stop()
 		animPlayer.seek(0)
 		$Sprite/Idle.hide()

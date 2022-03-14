@@ -3,7 +3,7 @@ extends State
 onready var move = get_parent()
 export var acceleration_x = 10000.0 #5000.0
 
-var impulse = 0;
+var impulse = 200.0
 var jumpCancelled = false
 var hasDoubleJump = true
 
@@ -12,13 +12,12 @@ func unhandled_input(event: InputEvent) -> void:
 
 func physics_process(delta: float) -> void:
 	move.physics_process(delta)
-	
 	if move.velocity.y < 0 and owner.currentSprite.name != "Jump" and not move.dash and not owner.dead:
 		owner._changeSprite(owner.currentSprite, owner.jumpSprite)
 	if move.velocity.y >= 0 and owner.currentSprite.name !="Fall" and not move.dash and not owner.dead:
 		owner._changeSprite(owner.currentSprite, owner.fallSprite)
 	
-	if hasDoubleJump and Input.is_action_just_pressed("jump") and owner.canDoubleJump and owner.currentSprite == owner.fallSprite:
+	if hasDoubleJump and Input.is_action_just_pressed("jump") and PlayerVariables.hasDoubleJump and owner.currentSprite == owner.fallSprite and not owner.dead:
 		move.velocity.y = 0
 		move.velocity += calculate_jump_velocity(impulse)
 		hasDoubleJump = false
@@ -83,6 +82,8 @@ func exit() -> void:
 	move.acceleration = move.acceleration_default
 
 func calculate_jump_velocity(impulse = 0.0) -> Vector2:
+	if owner.dead:
+		return Vector2.ZERO
 	return move.calculate_velocity(
 		move.velocity,
 		move.max_speed,

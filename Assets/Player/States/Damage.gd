@@ -13,7 +13,9 @@ func physics_process(delta: float) -> void:
 func enter(msg: Dictionary = {}) -> void:
 	move.enter(msg)
 	owner.invincible = true
-	if msg.other_body.is_in_group("Projectiles"):
+	if msg.other_body == null:
+		knock_back_direction = Vector2.ZERO
+	elif msg.other_body.is_in_group("Projectiles"):
 		knock_back_direction = Vector2.ZERO
 	else:
 		knock_back_direction = Vector2(1, -.3) if owner.global_position.x - msg.other_body.global_position.x > 0 else Vector2(-1, -.3)

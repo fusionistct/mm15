@@ -8,7 +8,8 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	if PlayerVariables.hasDash:
+		queue_free()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -18,5 +19,8 @@ func _ready():
 
 func _on_Area2D_body_entered(body):
 	if body.name == "Player":
-		body.canDash = true
+		owner.playUpgradeSound()
+		GameAudio.lowerVolume()
+		PlayerVariables.hasDash = true
+		owner.spawnText(["You acquired the dash booster.\nPress C or D to dash through obstacles.", "A powerful psychokinetic amplifier. Someone must have jammed it into the plant's key systems.", "The power currents have stabilized with its removal."])
 		queue_free()

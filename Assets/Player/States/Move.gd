@@ -25,13 +25,18 @@ onready var hitboxPos = owner.get_node("Hitbox/CollisionShape2D").get_position()
 onready var hurtboxPos = owner.get_node("EnemyDetector").get_position()
 
 func unhandled_input(event: InputEvent) -> void:	
-	if owner.is_on_floor() and not dead:
+	if owner.is_on_floor() and not dead and not dash:
 		if event.is_action_pressed("jump"):
 			_state_machine.transition_to("Move/Air", { impulse = jump_impulse })
-	if Input.is_action_just_pressed("dash") and not dead and owner.canDash and not owner.dashCooldown:
+	if Input.is_action_just_pressed("dash") and not dead and PlayerVariables.hasDash and not owner.dashCooldown:
+		owner.dashAudio.set_stream(owner.dashSound)
+		owner.dashAudio.set_volume_db(10)
+		owner.dashAudio.play()
+		owner.dashAudio.seek(0)
 		_state_machine.transition_to("Move/Dash")
 
 func physics_process(delta: float) -> void:	
+
 	var cancel_momentum = Input.is_action_just_released("ui_left") or Input.is_action_just_released("ui_right")
 	move_direction = Vector2.ZERO if knockback else get_move_direction()
 	
@@ -103,10 +108,8 @@ static func get_move_direction() -> Vector2:
 
 func _on_EnemyDetector_body_entered(body):
 	if body.is_in_group("Enemies"):
+		owner.owner.playHitSound()
 		owner.stats.health -= 1
-		#print_debug("Health: ", owner.stats.health)
-		print_debug(owner.global_position.x)
-		print_debug(body.global_position.x)
 		_state_machine.transition_to("Move/Damage", {other_body = body})
 		owner.get_node("Hurt").modulate = Color(10,10,10,.8)
 		yield(get_tree().create_timer(.05), "timeout")

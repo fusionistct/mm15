@@ -41,6 +41,11 @@ var invincibilityTimer
 const INVINCIBILITY_TIME = .3
 const DASH_INVINCIBILITY_TIME = .2
 
+onready var attackAudio = $AudioStreamPlayer
+onready var dashAudio = $AudioStreamPlayer2
+var attackSound : AudioStream = preload("res://Sounds/wub.wav")
+var dashSound : AudioStream = preload("res://Sounds/zap.wav")
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	animationPlayer.play("Idle")
@@ -59,7 +64,6 @@ func startDashCooldown():
 	dashCooldownTimer.start()
 	
 func finishDashCooldown():
-	print_debug("entered")
 	dashCooldownTimer.stop()		
 	$Tween.interpolate_property(self, "modulate", 
 		Color(1, 1, 1, 1), Color( 5, 5, 5, .8 ), .3, 
@@ -81,7 +85,7 @@ func finishDashCooldown():
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		stats.set_health(stats.max_health)
-		get_tree().change_scene("res://Levels/TestLevel.tscn")
+		get_tree().change_scene("res://Levels/Rooms/Room1.tscn")
 	if dead:
 		collider.disabled = true
 	if invincible and !collider.disabled:
@@ -92,6 +96,10 @@ func _physics_process(delta: float) -> void:
 			invincibilityTimer.set_wait_time(INVINCIBILITY_TIME)
 		invincibilityTimer.start()
 	if Input.is_action_just_pressed("attack") and not attackActive and not dead and not state_machine.state.name == "Damage":
+		attackAudio.set_stream(attackSound)
+		attackAudio.set_volume_db(10)
+		attackAudio.play()
+		attackAudio.seek(0)
 		_playAnim(attackSprite)
 		attackActive = true
 		lastAttackDirection = facingDirection
@@ -135,9 +143,12 @@ func _finishAttack(animName: String) -> void:
 
 func _death():
 	dead = true
+	Spawn.player_pos = null
+	Spawn.player_direction = null
 	yield(get_tree().create_timer(2), "timeout")
 	stats.set_health(stats.max_health)
-	get_tree().change_scene("res://Levels/TestLevel.tscn")
+	PlayerVariables.healthCollected = []
+	get_tree().change_scene("res://Levels/Rooms/Room1.tscn")
 
 func _finishInvincibility() -> void:
 	invincible = false

@@ -199,12 +199,14 @@ tracks/0/keys = {
 extents = Vector2( 5.11567, 7.61269 )
 
 [sub_resource type="RectangleShape2D" id=6]
-extents = Vector2( 3.52866, 7.00424 )
+extents = Vector2( 3.9878, 7.4828 )
 
 [node name="Player" type="KinematicBody2D"]
+collision_mask = 9
 script = ExtResource( 1 )
 
 [node name="Idle" type="Sprite" parent="."]
+pause_mode = 2
 texture = ExtResource( 2 )
 hframes = 6
 
@@ -241,7 +243,6 @@ texture = ExtResource( 17 )
 hframes = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2( 0, 1.5 )
 shape = SubResource( 1 )
 
@@ -274,6 +275,7 @@ script = ExtResource( 11 )
 script = ExtResource( 14 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+pause_mode = 2
 anims/Dash = SubResource( 7 )
 anims/Fall = SubResource( 9 )
 anims/Idle = SubResource( 2 )
@@ -287,21 +289,25 @@ anims/Attack = ExtResource( 10 )
 [node name="Hitbox" type="Area2D" parent="." groups=["Attack"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+visible = false
 position = Vector2( 11.1402, -0.407049 )
 shape = SubResource( 5 )
 disabled = true
 
 [node name="EnemyDetector" type="Area2D" parent="."]
-visible = false
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyDetector"]
 modulate = Color( 0.611765, 1, 0.290196, 1 )
-position = Vector2( -0.446945, 1.03864 )
+position = Vector2( 0.0121976, 1.5172 )
 shape = SubResource( 6 )
 
 [node name="Tween" type="Tween" parent="."]
 
 [node name="Tween2" type="Tween" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
 
 [connection signal="body_entered" from="EnemyDetector" to="StateMachine/Move" method="_on_EnemyDetector_body_entered"]
